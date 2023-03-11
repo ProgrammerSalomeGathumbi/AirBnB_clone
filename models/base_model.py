@@ -2,52 +2,56 @@
 """
 Module for BaseModel class.
 """
-import models
 from uuid import uuid4
 from datetime import datetime
 
 
 class BaseModel:
-    """
-    BaseModel class that defines all common attributes for other classes.
-    """
-    def __init__(self, *args, **kwargs):
-        """
-        Constructor method for BaseModel instances.
-        """
-        i = "%Y-%m-%dT%H:%M:%S.%f"
-        self.id = str(uuid4())
-        self.created_at = datetime.today()
-        self.updated_at = datetime.today()
-        if len(kwargs) != 0:
-            for arg, val in kwargs.items():
-                if arg == 'created_at'or val == 'updated_at':
-                    self.__dict__[arg] = datetime.strptime(val, i)
-                else:
-                    self.__dict__[arg] = val
-        else:
-            models.storage.new(self)
+    '''
+    BaseModel class
+    '''
 
-    def __str__(self):
-        """
-        Returns a string representation of a BaseModel instance.
-        """
-        return "[{}] ({}) {}".format(self.__class__.__name__, self.id,
-                                     self.__dict__)
+    def __init__(self, *args, **kwargs):
+        '''
+        Constructor method
+        '''
+        from models import storage
+        if not kwargs:
+            self.id = str(uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = datetime.now()
+            self.save()
+            storage.new(self)
+        else:
+            kwargs['created_at'] = datetime.strptime(kwargs['created_at'],
+                                                     '%Y-%m-%dT%H:%M:%S.%f')
+            kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'],
+                                                     '%Y-%m-%dT%H:%M:%S.%f')
+            del kwargs['__class__']
+            self.__dict__.update(kwargs)
 
     def save(self):
-        """
-        Updates the public instance attribute with the current datetime.
-        """
-        self.updated_at = datetime.today()
-        models.storage.save()
+        '''
+        Update public instance with current datetime
+        '''
+        from models import storage
+        self.updated_at = datetime.now()
+        storage.save()
+
+    def __str__(self):
+        '''
+        String reprsentation
+        '''
+        return '[{}] ({}) {}'.format(
+            type(self).__name__, self.id, self.__dict__)
 
     def to_dict(self):
-        """
-        Returns a dictionary containing all keys of __dict__ .
-        """
-        obj_dict = self.__dict__.copy()
-        obj_dict["created_at"] = self.created_at.isoformat()
-        obj_dict["updated_at"] = self.updated_at.isoformat()
-        obj_dict["__class__"] = self.__class__.__name__
-        return obj_dict
+        '''
+        Dictionary containing all
+        keys/values of __dict__
+        '''
+        my_dict = dict(self.__dict__)
+        my_dict['created_at'] = self.created_at.isoformat()
+        my_dict['updated_at'] = self.updated_at.isoformat()
+        my_dict['__class__'] = type(self).__name__
+        return my_dict
