@@ -1,13 +1,14 @@
-#!/usr/bin/python3
+#!/usr/bin/ python3
 """This is the FileStorage class."""
 import json
+import os
 from models.base_model import BaseModel
 from models.user import User
-# from models.state import State
-# from models.city import City
-# from models.place import Place
-# from models.amenity import Amenity
-# from models.review import Review
+from models.state import State
+from models.city import City
+from models.place import Place
+from models.amenity import Amenity
+from models.review import Review
 
 
 class FileStorage:
@@ -30,19 +31,21 @@ class FileStorage:
 
     def save(self):
         """Serialize __objects to the JSON file __file_path."""
-        odict = FileStorage.__objects
-        objdict = {obj: odict[obj].to_dict() for obj in odict.keys()}
-        with open(FileStorage.__file_path, "w") as f:
-            json.dump(objdict, f)
+        with open(FileStorage.__file_path, mode='w') as jsonFile:
+            obj_dict = {}
+            for key in FileStorage.__objects.keys():
+                obj_dict[key] = FileStorage.__objects[key].to_dict()
+            jsonFile.write(json.dumps(obj_dict))
 
     def reload(self):
         """Deserialize the JSON file __file_path to __objects, if it exists."""
-        try:
-            with open(FileStorage.__file_path) as f:
-                objdict = json.load(f)
-                for o in objdict.values():
-                    cls_name = o["__class__"]
-                    del o["__class__"]
-                    self.new(eval(cls_name)(**o))
-        except FileNotFoundError:
-            return
+        if os.path.isfile(FileStorage.__file_path):
+            try:
+                with open(FileStorage.__file_path, mode='r') as jFile:
+                    obj = json.load(jFile)
+                    for key in obj.keys():
+                        class_name = obj[key]["__class__"]
+                        new_obj = self.selectClass(class_name)(obj[key])
+                        FileStorage.__objects[key] = new_obj
+            except Exception as e:
+                return
