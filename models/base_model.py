@@ -7,14 +7,14 @@ from datetime import datetime
 
 
 class BaseModel:
-    '''
-    BaseModel class
-    '''
+    """
+    This is the  BaseModel class
+    """
 
     def __init__(self, *args, **kwargs):
-        '''
-        Constructor method
-        '''
+        """
+        This is the Constructor method
+        """
         from models import storage
         if not kwargs:
             self.id = str(uuid4())
@@ -31,25 +31,25 @@ class BaseModel:
             self.__dict__.update(kwargs)
 
     def save(self):
-        '''
-        Update public instance with current datetime
-        '''
+        """
+        Updates the basemodel instance with current datetime
+        """
         from models import storage
         self.updated_at = datetime.now()
         storage.save()
 
     def __str__(self):
-        '''
-        String reprsentation
-        '''
+        """
+        String reprsentation for the user
+        """
         return '[{}] ({}) {}'.format(
             type(self).__name__, self.id, self.__dict__)
 
     def to_dict(self):
-        '''
+        """
         Dictionary containing all
-        keys/values of __dict__
-        '''
+        keys/values of __dict__ of instance
+        """
         my_dict = dict(self.__dict__)
         my_dict['created_at'] = self.created_at.isoformat()
         my_dict['updated_at'] = self.updated_at.isoformat()
