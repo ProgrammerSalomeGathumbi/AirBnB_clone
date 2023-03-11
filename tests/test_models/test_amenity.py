@@ -1,32 +1,27 @@
 #!/usr/bin/python3
-"""Defines unittests for models/user.py.
+"""Defines unittests for models/amenity.py.
 """
 import unittest
 import uuid
 import datetime
-from models.user import User
+from models.amenity import Amenity
 
 
-class TestUser(unittest.TestCase):
+class TestAmenity(unittest.TestCase):
     """
-    Create object of User class for testing.
+    Create object of Amenity class for testing.
     """
     def setUp(self):
-        self.test1 = User()
-        self.test2 = User()
+        self.test1 = Amenity()
+        self.test2 = Amenity()
 
     """
     Test object attributes.
     """
     def test_attribute(self):
-        self.assertTrue(hasattr(self.test1, "first_name"))
-        self.assertTrue(hasattr(self.test1, "last_name"))
-        self.assertTrue(hasattr(self.test2, "email"))
-        self.assertTrue(hasattr(self.test2, "password"))
-        self.assertTrue(type(self.test1.first_name) is str)
-        self.assertTrue(type(self.test1.last_name) is str)
-        self.assertTrue(type(self.test2.email) is str)
-        self.assertTrue(type(self.test2.password) is str)
+        self.assertTrue(hasattr(self.test1, "name"))
+        self.assertFalse(hasattr(self.test2, "place"))
+        self.assertTrue(type(self.test1.name) is str)
         self.assertTrue(type(self.test2.id) is str)
         self.assertTrue(self.test1.id != self.test2.id)
         test_created1 = self.test1.created_at
@@ -43,6 +38,9 @@ class TestUser(unittest.TestCase):
         updated_save = self.test1.updated_at
         self.assertFalse(test_updated == updated_save)
 
+    """
+    Test dynamic method creation
+    """
+    def test_count(self):
+        self.assertFalse(hasattr(self.test1, "do_count()"))
 
-if __name__ == '__main__':
-    unittest.main()
