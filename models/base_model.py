@@ -7,13 +7,6 @@ import uuid
 import datetime
 
 
-#!/usr/bin/python3
-"""Base class to inherit from"""
-
-from datetime import datetime
-import uuid
-
-
 class BaseModel:
     def __init__(self, *args, **kwargs):
         """Initializes the Base model class attributes
