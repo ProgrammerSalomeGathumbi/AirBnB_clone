@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+<<<<<<< HEAD
 """Test Console"""
 from models.amenity import Amenity
 from models.base_model import BaseModel
@@ -44,4 +45,4 @@ class TestConsole(unittest.TestCase):
         self.assertTrue(issubclass(amenity1.__class__, BaseModel))
         self.assertTrue(issubclass(state1.__class__, BaseModel))
         self.assertTrue(issubclass(rev1.__class__, BaseModel))
-        self.assertTrue(issubclass(place1.__class__, BaseModel))
+>>>>>>> 4c29ef8c4f92885bd8abb372e99641a4c998fdb8
