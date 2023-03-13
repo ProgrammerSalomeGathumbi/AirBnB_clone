@@ -3,49 +3,86 @@
 """
 import unittest
 from models.base_model import BaseModel
+from uuid import UUID
+from datetime import datetime
 import os
-from models import storage
-from models.engine.file_storage import FileStorage
-import datetime
 
 
-class BaseModelTests(unittest.TestCase):
-    """ Suite of Console Tests """
+class TestBaseModel(unittest.TestCase):
+    """
+    =========================
+    BaseModel tests
+    =========================
+    """
+    def __init__(self, *args, **kwargs):
+        """
+        Constructor
+        """
+        super().__init__(*args, **kwargs)
+        self.test_class = BaseModel
+        self.test_name = 'BaseModel'
 
-    my_model = BaseModel()
+    def setUp(self):
+        """
+        Setup
+        """
+        pass
 
-    def testBaseModel1(self):
-        """ Test attributes value of a BaseModel instance """
+    def tearDown(self):
+        """
+        Destroy Json File
+        """
+        try:
+            os.remove('JSONstorage.json')
+        except Exception:
+            pass
 
-        self.my_model.name = "Holberton"
-        self.my_model.my_number = 89
-        self.my_model.save()
-        my_model_json = self.my_model.to_dict()
+    def test_id(self):
+        """
+        Attribute test
+        """
+        base = self.test_class()
+        self.assertIsInstance(base.id, str)
 
-        self.assertEqual(self.my_model.name, my_model_json['name'])
-        self.assertEqual(self.my_model.my_number, my_model_json['my_number'])
-        self.assertEqual('BaseModel', my_model_json['__class__'])
-        self.assertEqual(self.my_model.id, my_model_json['id'])
+    def test_created_at(self):
+        """
+        Attribute test
+        """
+        base = self.test_class()
+        now = datetime.now()
+        self.assertIsInstance(base.created_at, datetime)
+        self.assertTrue(now >= base.created_at)
 
-    def testSave(self):
-        """ Checks if save method updates the public instance instance
-        attribute updated_at """
-        self.my_model.first_name = "First"
-        self.my_model.save()
+    def test_updated_at(self):
+        """
+        Attribute test
+        """
+        base = self.test_class()
+        base.updated_at = datetime.now()
+        store = base.updated_at
+        self.assertIsInstance(base.updated_at, datetime)
+        base.updated_at = datetime.now()
+        self.assertNotEqual(base.updated_at, store)
 
-        self.assertIsInstance(self.my_model.id, str)
-        self.assertIsInstance(self.my_model.created_at, datetime.datetime)
-        self.assertIsInstance(self.my_model.updated_at, datetime.datetime)
+    def test_todict(self):
+        """
+        to_dict test
+        """
+        base = self.test_class()
+        num = base.to_dict()
+        self.assertEqual(base.to_dict(), num)
 
-        first_dict = self.my_model.to_dict()
+    def test_save(self):
+        """
+        save Test
+        """
+        self.assertFalse(os.path.exists('JSONstorage.json'))
 
-        self.my_model.first_name = "Second"
-        self.my_model.save()
-        sec_dict = self.my_model.to_dict()
-
-        self.assertEqual(first_dict['created_at'], sec_dict['created_at'])
-        self.assertNotEqual(first_dict['updated_at'], sec_dict['updated_at'])
-
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_str(self):
+        """
+        str test
+        """
+        base = self.test_class()
+        _str = '[' + self.test_name + "] ({}) {}".format(
+                              base.id, str(base.__dict__))
+        self.assertEqual(str(base), _str)
