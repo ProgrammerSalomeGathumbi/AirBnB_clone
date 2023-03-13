@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-0x00. AirBnB clone - The console
+ The AirBnB clone - The console
 Base_model module
 """
 import uuid
