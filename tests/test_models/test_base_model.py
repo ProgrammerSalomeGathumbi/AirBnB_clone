@@ -2,56 +2,87 @@
 """Defines unittests for models/base_model.py.
 """
 import unittest
-import uuid
-import datetime
 from models.base_model import BaseModel
+from uuid import UUID
+from datetime import datetime
+import os
 
 
 class TestBaseModel(unittest.TestCase):
     """
-    Create object of BaseModel class for testing.
+    =========================
+    BaseModel tests
+    =========================
     """
+    def __init__(self, *args, **kwargs):
+        """
+        Constructor
+        """
+        super().__init__(*args, **kwargs)
+        self.test_class = BaseModel
+        self.test_name = 'BaseModel'
+
     def setUp(self):
-        self.test1 = BaseModel()
-        self.test2 = BaseModel()
+        """
+        Setup
+        """
+        pass
 
-    """
-    Test object attributes.
-    """
-    def test_attribute(self):
-        self.assertFalse(hasattr(self.test1, "name"))
-        self.assertFalse(hasattr(self.test2, "my_number"))
-        self.assertTrue(hasattr(self.test1, "created_at"))
-        self.assertTrue(hasattr(self.test2, "id"))
-        self.assertTrue(type(self.test2.id) is str)
-        self.assertIsNot(self.test1.id, self.test2.id)
-        test_created1 = self.test1.created_at
-        test_created2 = self.test2.created_at
-        self.assertIsNot(test_created1, test_created2)
-        self.assertTrue(type(test_created2) is datetime.datetime)
+    def tearDown(self):
+        """
+        Destroy Json File
+        """
+        try:
+            os.remove('JSONstorage.json')
+        except Exception:
+            pass
 
-    """
-    Test if an attribute can be added after class is defined.
-    """
-    def test_adding_attribute(self):
-        self.test1.name = ""
-        self.test1.email = ""
-        self.test2.my_number = 1
-        self.test2.address = ""
-        self.assertTrue(hasattr(self.test1, "name"))
-        self.assertTrue(type(self.test1.name) is str)
-        self.assertTrue(hasattr(self.test1, "email"))
-        self.assertTrue(type(self.test1.email) is str)
-        self.assertTrue(hasattr(self.test2, "my_number"))
-        self.assertTrue(type(self.test2.my_number) is int)
-        self.assertTrue(hasattr(self.test2, "address"))
-        self.assertTrue(type(self.test2.address) is str)
+    def test_id(self):
+        """
+        Attribute test
+        """
+        base = self.test_class()
+        self.assertIsInstance(base.id, str)
 
-    """
-    Test inherited methods.
-    """
+    def test_created_at(self):
+        """
+        Attribute test
+        """
+        base = self.test_class()
+        now = datetime.now()
+        self.assertIsInstance(base.created_at, datetime)
+        self.assertTrue(now >= base.created_at)
+
+    def test_updated_at(self):
+        """
+        Attribute test
+        """
+        base = self.test_class()
+        base.updated_at = datetime.now()
+        store = base.updated_at
+        self.assertIsInstance(base.updated_at, datetime)
+        base.updated_at = datetime.now()
+        self.assertNotEqual(base.updated_at, store)
+
+    def test_todict(self):
+        """
+        to_dict test
+        """
+        base = self.test_class()
+        num = base.to_dict()
+        self.assertEqual(base.to_dict(), num)
+
     def test_save(self):
-        test_updated = self.test1.updated_at
-        self.test1.save()
-        updated_save = self.test1.updated_at
-        self.assertFalse(test_updated == updated_save)
+        """
+        save Test
+        """
+        self.assertFalse(os.path.exists('JSONstorage.json'))
+
+    def test__str__(self):
+        """
+        str test
+        """
+        base = self.test_class()
+        _str = '[' + self.test_name + "] ({}) {}".format(
+                              base.id, str(base.__dict__))
+        self.assertEqual(str(base), _str)
