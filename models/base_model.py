@@ -4,7 +4,7 @@
 Base_model module
 """
 import uuid
-import datetime
+from datetime import datetime
 
 
 class BaseModel:
@@ -53,4 +53,4 @@ class BaseModel:
         dict['created_at'] = self.created_at.isoformat()
         dict['updated_at'] = self.updated_at.isoformat()
 
-        return d
+        return dict
