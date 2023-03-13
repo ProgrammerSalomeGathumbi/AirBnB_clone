@@ -2,56 +2,50 @@
 """Defines unittests for models/base_model.py.
 """
 import unittest
-import uuid
-import datetime
 from models.base_model import BaseModel
+import os
+from models import storage
+from models.engine.file_storage import FileStorage
+import datetime
 
 
-class TestBaseModel(unittest.TestCase):
-    """
-    Create object of BaseModel class for testing.
-    """
-    def setUp(self):
-        self.test1 = BaseModel()
-        self.test2 = BaseModel()
+class BaseModelTests(unittest.TestCase):
+    """ Suite of Console Tests """
 
-    """
-    Test object attributes.
-    """
-    def test_attribute(self):
-        self.assertFalse(hasattr(self.test1, "name"))
-        self.assertFalse(hasattr(self.test2, "my_number"))
-        self.assertTrue(hasattr(self.test1, "created_at"))
-        self.assertTrue(hasattr(self.test2, "id"))
-        self.assertTrue(type(self.test2.id) is str)
-        self.assertIsNot(self.test1.id, self.test2.id)
-        test_created1 = self.test1.created_at
-        test_created2 = self.test2.created_at
-        self.assertIsNot(test_created1, test_created2)
-        self.assertTrue(type(test_created2) is datetime.datetime)
+    my_model = BaseModel()
 
-    """
-    Test if an attribute can be added after class is defined.
-    """
-    def test_adding_attribute(self):
-        self.test1.name = ""
-        self.test1.email = ""
-        self.test2.my_number = 1
-        self.test2.address = ""
-        self.assertTrue(hasattr(self.test1, "name"))
-        self.assertTrue(type(self.test1.name) is str)
-        self.assertTrue(hasattr(self.test1, "email"))
-        self.assertTrue(type(self.test1.email) is str)
-        self.assertTrue(hasattr(self.test2, "my_number"))
-        self.assertTrue(type(self.test2.my_number) is int)
-        self.assertTrue(hasattr(self.test2, "address"))
-        self.assertTrue(type(self.test2.address) is str)
+    def testBaseModel1(self):
+        """ Test attributes value of a BaseModel instance """
 
-    """
-    Test inherited methods.
-    """
-    def test_save(self):
-        test_updated = self.test1.updated_at
-        self.test1.save()
-        updated_save = self.test1.updated_at
-        self.assertFalse(test_updated == updated_save)
+        self.my_model.name = "Holberton"
+        self.my_model.my_number = 89
+        self.my_model.save()
+        my_model_json = self.my_model.to_dict()
+
+        self.assertEqual(self.my_model.name, my_model_json['name'])
+        self.assertEqual(self.my_model.my_number, my_model_json['my_number'])
+        self.assertEqual('BaseModel', my_model_json['__class__'])
+        self.assertEqual(self.my_model.id, my_model_json['id'])
+
+    def testSave(self):
+        """ Checks if save method updates the public instance instance
+        attribute updated_at """
+        self.my_model.first_name = "First"
+        self.my_model.save()
+
+        self.assertIsInstance(self.my_model.id, str)
+        self.assertIsInstance(self.my_model.created_at, datetime.datetime)
+        self.assertIsInstance(self.my_model.updated_at, datetime.datetime)
+
+        first_dict = self.my_model.to_dict()
+
+        self.my_model.first_name = "Second"
+        self.my_model.save()
+        sec_dict = self.my_model.to_dict()
+
+        self.assertEqual(first_dict['created_at'], sec_dict['created_at'])
+        self.assertNotEqual(first_dict['updated_at'], sec_dict['updated_at'])
+
+
+if __name__ == '__main__':
+    unittest.main()
