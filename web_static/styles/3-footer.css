@@ -9,3 +9,6 @@ footer{
     border-top: 1px solid #CCCCCC;
     text-align: center;
 }
+p{
+   margin: auto;
+}
